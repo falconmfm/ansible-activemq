@@ -1,13 +1,39 @@
 ---
-- name: Copy env configuration file
+- name: Copy env configuration file ( Debian )
   template:
     src: activemq-env.j2
     dest: /etc/default/activemq-instance-{{ amq_broker_instance_name }}
     owner: root
     group: root
     mode: 0644
+  when: ansible_os_family == 'Debian'
   notify:
     - restart activemq
+
+- name: Copy env configuration file ( CentOS & RH )
+  template:
+    src: activemq-env-rh.j2
+    dest: /etc/sysconfig/{{ amq_broker_instance_name }}
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_os_family == 'RedHat'
+  notify:
+    - restart activemq
+
+- name: Copy groups and users properties templates
+  template:
+    src: "{{ item }}.j2"
+    dest: '{{ amq_conf_dir }}/{{ item }}'
+    owner: '{{ amq_user }}'
+    group: '{{ amq_user }}'
+    mode: 0644
+  when:
+    - amq_custom_xml_config == False
+  with_items:
+    - groups.properties
+    - users.properties
+
 
 - name: Copy activemq.xml config file
   template:
@@ -41,13 +67,28 @@
   lineinfile:
     dest: '{{ amq_conf_dir }}/log4j.properties'
     regexp: '^log4j.appender.logfile.file='
-    line: 'log4j.appender.logfile.file=/var/log/activemq-instance-{{ amq_broker_instance_name }}/activemq.log'
+    line: 'log4j.appender.logfile.file=/var/log/{{ amq_broker_instance_name }}/activemq.log'
     state: present
   notify:
     - restart activemq
 
-- name: Symlink init script
+- name: Init script ( Debian )
   file:
     src: '{{ amq_install_dir }}/bin/activemq'
     dest: '/etc/init.d/activemq-instance-{{ amq_broker_instance_name }}'
     state: link
+  when: ansible_os_family == 'Debian'
+
+- name: Init script ( Debian )
+  template:
+    src: activemq-init.j2
+    dest: /etc/init.d/{{ amq_broker_instance_name }}
+    owner: root
+    group: root
+    mode: 0755
+  when: ansible_os_family == 'RedHat'
+  notify:
+    - restart activemq
+  tags:
+    - init
+ 

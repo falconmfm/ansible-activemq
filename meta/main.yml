@@ -11,5 +11,5 @@ galaxy_info:
   galaxy_tags:
     - activemq
 
-dependencies:
-  - { role: ansiblebit.oracle-java, oracle_java_set_as_default: yes }
+#dependencies:
+#  - { role: ansiblebit.oracle-java, oracle_java_set_as_default: yes }

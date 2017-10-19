@@ -1,5 +1,5 @@
 ---
 - name: restart activemq
   service:
-    name: 'activemq-instance-{{ amq_broker_instance_name }}'
+    name: '{{ amq_broker_instance_name }}'
     state: restarted

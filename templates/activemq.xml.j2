@@ -12,7 +12,35 @@
         </property>
     </bean>
 
-    <broker xmlns="http://activemq.apache.org/schema/core" brokerName="{{ amq_broker_instance_name }}" dataDirectory="${activemq.data}">
+    <broker xmlns="http://activemq.apache.org/schema/core" 
+                brokerName="{{ amq_broker_instance_name }}" 
+                dataDirectory="${activemq.data}"
+                useJmx="true"
+                advisorySupport="false"
+                persistent="true"
+                deleteAllMessagesOnStartup="false"
+                useShutdownHook="false"
+                schedulerSupport="true">
+
+        <plugins>
+            <jaasAuthenticationPlugin configuration="activemq" />
+            <runtimeConfigurationPlugin checkPeriod="30000" />
+            <authorizationPlugin>
+                <map>
+                    <authorizationMap>
+                       <authorizationEntries>
+	  		<authorizationEntry topic="ActiveMQ.Advisory.>" read="all,admins" write="all,admins" admin="all,admins"/>
+			<authorizationEntry queue="Q.OVINT.AUTORIZA" read="autoriza,admins" write="ovint,admins" admin="admins" />
+			<authorizationEntry queue="Q.AUTORIZA.OVINT" read="ovint,admins" write="autoriza,admins" admin="admins" />
+			</authorizationEntries>                        
+			<tempDestinationAuthorizationEntry>
+                            <tempDestinationAuthorizationEntry read="admins" write="admins" admin="admins"/>
+                        </tempDestinationAuthorizationEntry>
+                    </authorizationMap>
+                </map>
+            </authorizationPlugin>
+        </plugins>
+
         <destinationPolicy>
             <policyMap>
               <policyEntries>
@@ -24,6 +52,20 @@
 
                 <policyEntry queue=">" producerFlowControl="false" cursorMemoryHighWaterMark="30">
                 </policyEntry>
+
+                <policyEntry queue="Q.OVINT.*" producerFlowControl="true" memoryLimit="20mb">
+                    <pendingQueuePolicy>
+                        <vmQueueCursor/>
+                    </pendingQueuePolicy>
+                </policyEntry>
+
+       <policyEntry queue="Q.*.OVINT" producerFlowControl="true" memoryLimit="10mb"> 
+         <pendingQueuePolicy>
+           <vmQueueCursor/>
+         </pendingQueuePolicy>
+       </policyEntry>
+		</policyEntries>
+	</policyMap>
 
                 <!-- Dead-messages queue prefix -->
                 <policyEntry queue=">" producerFlowControl="false">
@@ -47,7 +89,7 @@
           <systemUsage>
             <systemUsage sendFailIfNoSpace="true">
                 <memoryUsage>
-                    <memoryUsage limit="128 mb"/>
+                    <memoryUsage percentOfJvmHeap="70" />
                 </memoryUsage>
                 <storeUsage>
                     <storeUsage limit="100 gb"/>

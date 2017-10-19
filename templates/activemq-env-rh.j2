@@ -1,0 +1,29 @@
+# Sample sysconfig file
+
+# Oracle
+JAVA_HOME=/import/software/java17_01
+
+ACTIVEMQ_HOME='{{ amq_install_dir }}'
+ACTIVEMQ_BASE="$ACTIVEMQ_HOME"
+
+ACTIVEMQ_USER='{{ amq_user }}'
+
+ACTIVEMQ_OPTS_MEMORY='{{ amq_opts_memory }}'
+
+ACTIVEMQ_CONF={{ amq_conf_dir }}
+
+ACTIVEMQ_DATA={{ amq_data_dir }}
+ACTIVEMQ_LOG="$ACTIVEMQ_DATA/activemq01_01.log"
+
+ACTIVEMQ_TMP={{ amq_tmp_dir }}
+
+
+ACTIVEMQ_START="${ACTIVEMQ_BASE}/bin/activemq start"
+ACTIVEMQ_STOP="${ACTIVEMQ_BASE}/bin/activemq stop"
+ACTIVEMQ_START="JAVA_HOME=${JAVA_HOME} ACTIVEMQ_OPTS=\" {{ amq_opts_memory }} -Xmn200M -XX:+HeapDumpOnOutOfMemoryError -Xss256k -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:SurvivorRatio=8 -Dorg.apache.activemq.UseDedicatedTaskRunner=false\" ${ACTIVEMQ_START}"
+
+
+#ACTIVEMQ_START="JAVA_HOME=${JAVA_HOME} ACTIVEMQ_OPTS=\" -Xms1G -Xmx1G -Xmn200M -XX:+HeapDumpOnOutOfMemoryError -Xss256k -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:SurvivorRatio=8 -Dorg.apache.activemq.UseDedicatedTaskRunner=false\" ${ACTIVEMQ_START}"
+export ACTIVEMQ_USER ACTIVEMQ_BASE ACTIVEMQ_START ACTIVEMQ_STOP ACTIVEMQ_LOG \
+        ACTIVEMQ_OPTS JAVA_HOME ACTIVEMQ_CLASSPATH
+
