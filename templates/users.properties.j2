@@ -15,7 +15,6 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-admin=admin
-system=manager
-user_ovint=pass_ovint
-user_autoriza=pass_autoriza
+{% for user in list_users %}
+{{ user.name }}={{ user.password }}
+{% endfor %}
