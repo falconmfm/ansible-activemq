@@ -4,7 +4,8 @@
     src:   '{{ amq_download_url }}'
     dest:  '{{ amq_install_dir }}'
     owner: '{{ amq_user }}'
-    group: '{{ amq_user }}'
+    group: '{{ amq_group }}'
     extra_opts: ['--strip-components=1']
     copy: no
+  environment: "{{ proxy_env }}"
   ignore_errors: yes

@@ -1,0 +1,16 @@
+# cat activemq.service
+[Unit]
+Description=Apache ActiveMQ
+After=network-online.target
+
+[Service]
+Type=forking
+WorkingDirectory={{ amq_install_dir }}/bin
+ExecStart={{ amq_install_dir }}/bin/activemq start
+ExecStop={{ amq_install_dir }}/bin/activemq stop
+Restart=on-abort
+User={{ amq_user }}
+Group={{ amq_group }}
+
+[Install]
+WantedBy=multi-user.target

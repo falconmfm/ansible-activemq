@@ -29,9 +29,12 @@
                 <map>
                     <authorizationMap>
                        <authorizationEntries>
-	  		<authorizationEntry topic="ActiveMQ.Advisory.>" read="all,admins" write="all,admins" admin="all,admins"/>
-			<authorizationEntry queue="Q.OVINT.AUTORIZA" read="autoriza,admins" write="ovint,admins" admin="admins" />
-			<authorizationEntry queue="Q.AUTORIZA.OVINT" read="ovint,admins" write="autoriza,admins" admin="admins" />
+{% for topic in list_topic %}
+                        <authorizationEntry topic="{{ topic.name }}" read="{{ topic.read }}" write="{{ topic.write }}" admin="{{ topic.admin }}"/>
+{% endfor %}
+{% for queue in list_queue %}
+                        <authorizationEntry queue="{{ queue.name }}" read="{{ queue.read }}" write="{{ queue.write }}" admin="{{ queue.admin }}"/>
+{% endfor %}
 			</authorizationEntries>                        
 			<tempDestinationAuthorizationEntry>
                             <tempDestinationAuthorizationEntry read="admins" write="admins" admin="admins"/>
@@ -50,22 +53,16 @@
                   </pendingMessageLimitStrategy>
                 </policyEntry>
 
-                <policyEntry queue=">" producerFlowControl="false" cursorMemoryHighWaterMark="30">
-                </policyEntry>
+              <policyEntry queue=">" producerFlowControl="false" cursorMemoryHighWaterMark="30">
+              </policyEntry>
 
-                <policyEntry queue="Q.OVINT.*" producerFlowControl="true" memoryLimit="20mb">
+{% for policy in list_policy %}
+                <policyEntry queue="{{ policy.name }}" producerFlowControl="true" memoryLimit="{{ policy.memory }}">
                     <pendingQueuePolicy>
                         <vmQueueCursor/>
                     </pendingQueuePolicy>
                 </policyEntry>
-
-       <policyEntry queue="Q.*.OVINT" producerFlowControl="true" memoryLimit="10mb"> 
-         <pendingQueuePolicy>
-           <vmQueueCursor/>
-         </pendingQueuePolicy>
-       </policyEntry>
-		</policyEntries>
-	</policyMap>
+{% endfor %}
 
                 <!-- Dead-messages queue prefix -->
                 <policyEntry queue=">" producerFlowControl="false">
@@ -92,10 +89,10 @@
                     <memoryUsage percentOfJvmHeap="70" />
                 </memoryUsage>
                 <storeUsage>
-                    <storeUsage limit="100 gb"/>
+                    <storeUsage limit="10 gb"/>
                 </storeUsage>
                 <tempUsage>
-                    <tempUsage limit="50 gb"/>
+                    <tempUsage limit="5 gb"/>
                 </tempUsage>
             </systemUsage>
         </systemUsage>
@@ -105,6 +102,8 @@
             <transportConnector name="amqp" uri="{{ amq_amqp_transport_connector_uri }}"/>
             <transportConnector name="stomp" uri="{{ amq_stomp_transport_connector_uri }}"/>
             <transportConnector name="stomp+nio" uri="{{ amq_stomp_and_nio_transport_connector_uri }}"/>
+            <transportConnector name="mqtt" uri="{{ amq_mqtt_transport_connector_uri }}"/>
+            <transportConnector name="ws" uri="{{ amq_ws_transport_connector_uri }}"/>
         </transportConnectors>
 
         <shutdownHooks>
